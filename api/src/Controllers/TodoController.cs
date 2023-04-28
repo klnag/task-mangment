@@ -16,34 +16,42 @@ public class TodoController : ControllerBase {
     public TodoController(DataContext context) {
         this.context = context;
     }
-
-    [HttpGet()]
-    public DbSet<Todo>? Get() {
-        return context.Todos;
+    public class ApiResponse<T>
+    {
+        public T Data { get; set; }
+        public string Error { get; set; } = "";
     }
+    // [HttpGet()]
+    // public DbSet<Todo>? Get() {
+    //     return context.Todos;
+    // }
 
     [HttpPost]
-    public ActionResult<Todo> Post([FromBody] TodoDto todoFormBody)
+    public ActionResult<ApiResponse<Todo>> Post([FromBody] TodoDto todoFormBody)
     {
+        ApiResponse<Todo> response = new();
         Project project = context.Projects.FirstOrDefault(u => u.Id == todoFormBody.ProjectId);
-        if (project != null)
+        if (project == null)
         {
-            
-                Todo newTodo = new Todo { Title = todoFormBody.Title, Project = project, username = todoFormBody.username, index = todoFormBody.index, Priority = todoFormBody.Priority, AssignTo = todoFormBody.AssignTo };
-                context.Todos.Add(newTodo);
-                context.SaveChanges();
-                return newTodo;
+            response.Error = "project not found";
+            return BadRequest(response);
         }
-        return new BadRequestObjectResult("project not found");
+        Todo newTodo = new Todo { Title = todoFormBody.Title, Project = project, username = todoFormBody.username, index = todoFormBody.index, Priority = todoFormBody.Priority, AssignTo = todoFormBody.AssignTo };
+        context.Todos.Add(newTodo);
+        context.SaveChanges();
+        response.Data = newTodo;
+        return response;
     }
 
     [HttpPatch("{id}")]
-    public  ActionResult<Todo> UpdateTaskPosition(int id, [FromBody] TodoDto request)
+    public  ActionResult<ApiResponse<Todo>> UpdateTaskPosition(int id, [FromBody] TodoDto request)
     {
+        ApiResponse<Todo> response = new();
         Todo taskItem =  context.Todos.Find(id);
         if (taskItem == null)
         {
-            return NotFound();
+            response.Error = "Todo does not exist";
+            return BadRequest(response);
         }
 
         taskItem.Title = request.Title;
@@ -55,19 +63,23 @@ public class TodoController : ControllerBase {
         context.Todos.Update(taskItem);
         context.SaveChanges();
 
-        return taskItem;
+        response.Data = taskItem;
+        return response;
     }
 
     [HttpDelete("{id}")]
-    public string Delete(int id)
+    public ActionResult<ApiResponse<string>> Delete(int id)
     {
+        ApiResponse<string> response = new();
         Todo? Todo = context.Todos?.Find(id);
         if (Todo == null)
         {
-            return "Todo does not exisit";
+            response.Error = "Todo does not exisit";
+            return BadRequest(response);
         }
         context.Todos?.Remove(Todo);
         context.SaveChanges();
-        return "Todo deleted";
+        response.Data = "Todo deleted";
+        return response;
     }
 }

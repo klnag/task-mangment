@@ -21,29 +21,39 @@ public class CommentController : ControllerBase {
     // public DbSet<Comment>? Get() {
     //     return context.Comments;
     // }
+    public class ApiResponse<T>
+    {
+        public T Data { get; set; }
+        public string Error { get; set; } = "";
+    }
 
     [HttpPost]
-    public ActionResult<Comment> Post([FromBody] CommentDto CommentFormBody)
+    public ActionResult<ApiResponse<Comment>> Post([FromBody] CommentDto CommentFormBody)
     {
+        ApiResponse<Comment> response = new();
         Todo todo = context.Todos.FirstOrDefault(u => u.Id == CommentFormBody.TodoId);
-        if (todo != null)
+        if (todo == null)
         {
-            
-                Comment newComment = new Comment { Context = CommentFormBody.Context, UserId = int.Parse(User.Identity.Name), TodoId = CommentFormBody.TodoId, UserName = CommentFormBody.UserName };
-                context.Comments.Add(newComment);
-                context.SaveChanges();
-                return newComment;
+            response.Error = "todo not found";
+            return BadRequest(response);
         }
-        return new BadRequestObjectResult("todo not found");
+        Comment newComment = new Comment { Context = CommentFormBody.Context, UserId = int.Parse(User.Identity.Name), TodoId = CommentFormBody.TodoId, UserName = CommentFormBody.UserName };
+        context.Comments.Add(newComment);
+        context.SaveChanges();
+        response.Data = newComment;
+        return response;
     }
 
     [HttpGet]
-    public ActionResult<IQueryable<Comment>> GetAllCommentsTodo(int todoId) {
+    public ActionResult<ApiResponse<IQueryable<Comment>>> GetAllCommentsTodo(int todoId) {
+        ApiResponse<IQueryable<Comment>> response = new();
        Todo? Todo = context.Todos?.Find(todoId);
-        if (Todo != null)
+        if (Todo == null)
         {
-            return Ok(context.Comments.Where(com => com.TodoId == todoId));
+            response.Error = "Todo does not exisit";
+            return BadRequest(response);
         } 
-        return new BadRequestObjectResult("Todo does not exisit");
+        response.Data = context.Comments.Where(com => com.TodoId == todoId);
+        return response;
     }
 }

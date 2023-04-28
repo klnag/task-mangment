@@ -5,9 +5,12 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters; 
 using System.Text.Json.Serialization;
+using DotNetEnv;
 
+DotNetEnv.Env.Load();
 var builder = WebApplication.CreateBuilder(args);
-
+string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+// Console.WriteLine(connectionString);
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -23,16 +26,18 @@ builder.Services.AddSwaggerGen(option => {
         Type = SecuritySchemeType.ApiKey 
     });
     option.OperationFilter<SecurityRequirementsOperationFilter>();
+    option.CustomSchemaIds(type => type.ToString());
 });
 builder.Services.AddDbContext<DataContext>(options => {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("WebApiDatabase"));
+    // options.UseNpgsql(builder.Configuration.GetConnectionString("WebApiDatabase"));
+    options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING"));
 });
 builder.Services.AddAuthentication().AddJwtBearer(option => {
     option.TokenValidationParameters = new TokenValidationParameters {
         ValidateIssuer = false,
         ValidateAudience = false,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value!))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("TOKEN")!))
     }; 
 });
 builder.Services.AddControllers().AddJsonOptions(option => 

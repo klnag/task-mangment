@@ -349,7 +349,7 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
-
+.env
 # BeatPulse healthcheck temp database
 healthchecksdb
 
@@ -364,7 +364,7 @@ FodyWeavers.xsd
 
 #client
 # See http://help.github.com/ignore-files/ for more about ignoring files.
-
+.angular
 # Compiled output
 /dist
 /tmp

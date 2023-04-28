@@ -19,16 +19,17 @@ public class ProjectController : ControllerBase
         this.context = context;
     }
 
+    // [swaggerid("StringApiResponse")]
     public class ApiResponse<T>
     {
-        public T Data { get; set; }
+        public T? Data { get; set; }
         public string Error { get; set; } = "";
     }
-    [HttpGet()]
-    public DbSet<Project>? Get()
-    {
-        return context.Projects;
-    }
+    // [HttpGet()]
+    // public DbSet<Project>? Get()
+    // {
+    //     return context.Projects;
+    // }
 
     [HttpPost]
     public ActionResult<ApiResponse<Project>> Post([FromBody] ProjectDto projectName)
@@ -52,60 +53,69 @@ public class ProjectController : ControllerBase
         return BadRequest(response);
     }
 
-    [HttpPatch("{id}")]
-    public string Patch(int id, [FromBody] Project projectFormBody)
+    // [HttpPatch("{id}")]
+    // public string Patch(int id, [FromBody] Project projectFormBody)
+    // {
+    //     Project? project = context.Projects?.Find(id);
+    //     if (project == null)
+    //     {
+    //         return "project does not exisit";
+    //     }
+    //     project.Name = projectFormBody.Name;
+    //     context.Projects?.Update(project);
+    //     context.SaveChanges();
+    //     return "project updated";
+    // }
+
+
+    // [HttpDelete("{id}")]
+    // public string Delete(int id)
+    // {
+    //     Project? project = context.Projects?.Find(id);
+    //     if (project == null)
+    //     {
+    //         return "project does not exisit";
+    //     }
+    //     context.Projects?.Remove(project);
+    //     context.SaveChanges();
+    //     return "project deleted";
+    // }
+
+    [HttpGet("getAllUserProjects")]
+    public ActionResult<ApiResponse<IQueryable<Project>>> getAllUserProjects(int userId)
     {
-        Project? project = context.Projects?.Find(id);
-        if (project == null)
+        ApiResponse<IQueryable<Project>> response = new();
+        if (context.Users.Find(userId) == null)
         {
-            return "project does not exisit";
+            response.Error = "User does not exist";
+            return BadRequest(response);
         }
-        project.Name = projectFormBody.Name;
-        context.Projects?.Update(project);
-        context.SaveChanges();
-        return "project updated";
-    }
-
-
-    [HttpDelete("{id}")]
-    public string Delete(int id)
-    {
-        Project? project = context.Projects?.Find(id);
-        if (project == null)
-        {
-            return "project does not exisit";
-        }
-        context.Projects?.Remove(project);
-        context.SaveChanges();
-        return "project deleted";
-    }
-
-    [HttpPost("userprojects")]
-    public IQueryable<Project> getAllProjectOfUser(int userId)
-    {
-        // int id = int.Parse(User.Identity.Name);
-        // Console.WriteLine(id);
         User user = context.Users.Find(userId);
         IQueryable<Project> allUserProjects = context.Projects.Where(p => p.ShareUsersId.Contains(user.Id));
-        return allUserProjects;
+        response.Data = allUserProjects;
+        return response;
     }
 
-    [HttpPost("projecttodos")]
-    public ActionResult<IQueryable<Todo>> getAllTasksOfPrject(int projectId)
+    [HttpGet("getAllProjecTodo")]
+    public ActionResult<ApiResponse<IQueryable<Todo>>> getAllProjecTodo(int projectId)
     {
+        ApiResponse<IQueryable<Todo>> response = new();
         int userId = int.Parse(User.Identity.Name);
-        if (context.Users.Find(userId) != null)
+        if (context.Users.Find(userId) == null)
         {
-            IQueryable<Todo> allProjectTodos = context.Todos.Where(todo => todo.ProjectId == projectId);
-            return Ok(allProjectTodos.OrderBy(t => t.index));
+            response.Error = "User does not exist";
+            return response;
         }
-        return new BadRequestObjectResult("User does not exist");
+
+        IQueryable<Todo> allProjectTodos = context.Todos.Where(todo => todo.ProjectId == projectId);
+        response.Data = allProjectTodos.OrderBy(t => t.index);
+        return response;
     }
 
-    [HttpPatch("addUserIdToProject")]
-    public ActionResult<ApiResponse<string>> addUserIdToProjectPost(int projectId, string sharedUserEmail)
+    [HttpPost("addUserToProject")]
+    public ActionResult<ApiResponse<string>> addUserToProject(int projectId, string sharedUserEmail)
     {
-        ApiResponse<string> response = new ApiResponse<string>();
+        ApiResponse<string> response = new();
         int userId = int.Parse(User.Identity.Name);
         User user = context.Users.Find(userId);
         User sharedUser = context.Users.FirstOrDefault(u => u.Email == sharedUserEmail);
@@ -155,6 +165,6 @@ public class ProjectController : ControllerBase
             }
         }
         response.Error = "User Does not exisit";
-        return BadRequest(response);
+        return response;
     }
 }

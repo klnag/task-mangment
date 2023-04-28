@@ -42,13 +42,16 @@ public class UserController : ControllerBase {
     }
 
     [HttpGet(), Authorize()]
-    public ActionResult<User> GetInfo() {
+    public ActionResult<ApiResponse<User>> GetInfo() {
+        ApiResponse<User> response = new ();
         string id = User.Identity.Name;
         User? user = context.Users?.Find(int.Parse(id));
         if(user == null) {
-            return new BadRequestObjectResult("user does not exsist");
+            response.Error = "user does not exsist";
+            return BadRequest(response);
         }
-        return user; 
+        response.Data = user;
+        return response; 
     }
     [HttpPost] 
     public ActionResult<ApiResponse<string>> Post(UserDto userFormBody) {
@@ -81,29 +84,29 @@ public class UserController : ControllerBase {
             return response;
     }
 
-    [HttpPatch, Authorize]
-    public string Patch([FromBody] User userFormBody) {
-        string id = User.Identity.Name;
-        User? user = context.Users?.Find(int.Parse(id));
-        if(user == null){
-            return "user does not exisit";
-        }
-        user.Username = userFormBody.Username;
-        context.Users?.Update(user);
-        context.SaveChanges();
-        return "user updated";
-    }
+    // [HttpPatch, Authorize]
+    // public string Patch([FromBody] User userFormBody) {
+    //     string id = User.Identity.Name;
+    //     User? user = context.Users?.Find(int.Parse(id));
+    //     if(user == null){
+    //         return "user does not exisit";
+    //     }
+    //     user.Username = userFormBody.Username;
+    //     context.Users?.Update(user);
+    //     context.SaveChanges();
+    //     return "user updated";
+    // }
 
 
-    [HttpDelete(), Authorize]
-    public string Delete() {
-        string id = User.Identity.Name;
-        User? user = context.Users?.Find(int.Parse(id));
-        if(user == null){
-            return "user does not exisit";
-        }
-        context.Users?.Remove(user);
-        context.SaveChanges();
-        return "user deleted";
-    }
+    // [HttpDelete(), Authorize]
+    // public string Delete() {
+    //     string id = User.Identity.Name;
+    //     User? user = context.Users?.Find(int.Parse(id));
+    //     if(user == null){
+    //         return "user does not exisit";
+    //     }
+    //     context.Users?.Remove(user);
+    //     context.SaveChanges();
+    //     return "user deleted";
+    // }
 }

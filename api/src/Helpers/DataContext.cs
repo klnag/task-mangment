@@ -18,7 +18,7 @@ public class DataContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         // connect to postgres with connection string from app settings
-        options.UseNpgsql(Configuration.GetConnectionString("WebApiDatabase"));
+        options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING"));
     }
 
     public DbSet<User>? Users { get; set; }

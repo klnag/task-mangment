@@ -15,7 +15,6 @@ interface Status {
 @Component({
   selector: 'app-project-page',
   templateUrl: './project-page.component.html',
-  styleUrls: ['./project-page.component.css'],
 
 })
 export class ProjectPageComponent {
@@ -52,7 +51,7 @@ this.store.getErrMsg().subscribe((value) => {
     this.stringTOHtml("Hi\n there\n")
     this.isLoadding = true
     this.projectPageService.handleOnGetAllTodos(this.projectData.id).subscribe((res: any) => {
-      const data = res.data
+      const data = res.data.$values
       data.map((todo: any) => {
         if(todo.status === "TODO") {
           this.allTodoColTodos.push(todo)
@@ -62,14 +61,14 @@ this.store.getErrMsg().subscribe((value) => {
           this.allDoneColTodos.push(todo)
         }
       })
-      console.log(this.allTodoColTodos)
-      console.log(this.allInPrograceColTodos)
-      console.log(this.allDoneColTodos)
+      //console.log(this.allTodoColTodos)
+      //console.log(this.allInPrograceColTodos)
+      //console.log(this.allDoneColTodos)
       this.isLoadding = false 
     }, err => {
         this.store.setErrMsg(err.error.error)
       })
-    console.log(this.projectData)
+    //console.log(this.projectData)
   }
 
   handleOnAddNewTodo() {
@@ -77,13 +76,12 @@ this.store.getErrMsg().subscribe((value) => {
           this.allTodoColTodos.push({id: -1,title: this.newTodo, projectId: this.projectData.id, username: this.userData.user.username,index: this.allTodoColTodos.length-1,context: "", assignTo: "", priority: "low"})
           this.isCreatingNewTodo = false
       this.projectPageService.handleOnCreateNewTodo(this.newTodo, this.projectData.id, this.userData.user.username, this.allTodoColTodos.length-1 )
-        .subscribe((data: any) => {
+        .subscribe((res: any) => {
           // this.allTodoColTodos.push(data)
           this.newTodo = ""
 
-        this.allTodoColTodos[this.allTodoColTodos.length - 1].id = data.id 
-          console.log(data)
-          console.log(this.allTodoColTodos)
+        this.allTodoColTodos[this.allTodoColTodos.length - 1] = res.data 
+          //console.log(this.allTodoColTodos)
         }, err => {
         this.store.setErrMsg(err.error.error)
       })
@@ -93,7 +91,7 @@ this.store.getErrMsg().subscribe((value) => {
     let d = priority
     if(priority.value) d = priority.value
     this.projectPageService.handleOnUpdateTodo(todoId, title, this.projectData.id, context, status, username, index, d, assignTo)
-      .subscribe((data: any) => {
+      .subscribe((res: any) => {
           let list = []
           if (this.selectedTask.status === "TODO" || status === "TODO") {
             list = this.allTodoColTodos
@@ -102,16 +100,16 @@ this.store.getErrMsg().subscribe((value) => {
           } else if (this.selectedTask.status === "DONE" || status === "DONE") {
             list = this.allDoneColTodos
           }
-            const index = list.findIndex(t => t.id === data.id)
-            console.log(index, data)
-            list[index] = data
+            const index = list.findIndex(t => t.id === res.data.id)
+            //console.log(index, res.data)
+            list[index] = res.data
         
-        console.log(data)
-        // console.log(this.allTodoColTodos)
-        // console.log(this.allInPrograceColTodos)
-        // console.log(this.allDoneColTodos)
+        // //console.log(data)
+        // //console.log(this.allTodoColTodos)
+        // //console.log(this.allInPrograceColTodos)
+        // //console.log(this.allDoneColTodos)
         this.isUpdateTodoContext = false
-        this.selectedTask = data
+        this.selectedTask = res.data
         this.isUpdateingTodoTitle = false
 
       }, err => {
@@ -128,7 +126,7 @@ if(this.selectedTask.status === "TODO") {
         this.allDoneColTodos = this.allDoneColTodos.filter((todo: any) => todo.id !== this.selectedTask.id)
       }
     this.projectPageService.handleOnDeleteTodo(this.selectedTask.id)
-    .subscribe(data => {
+    .subscribe(res => {
       
     }, err => {
         this.store.setErrMsg(err.error.error)
@@ -141,12 +139,12 @@ if(this.selectedTask.status === "TODO") {
     this.isUpdatingTask = true
     this.selectedTask = todo
       this.selectedTodoContext = todo.context
-    console.log(todo, new Date(todo.createdAt).toLocaleString())
+    //console.log(todo, new Date(todo.createdAt).toLocaleString())
     this.selectedTaskCreatedAt = new Date(todo.createdAt).toLocaleString()
     this.selectedTaskUpdateAt = new Date(todo.updateddAt).toLocaleString()
     this.projectPageService.handleOnGetAllTaskComments(todo.id)
-    .subscribe((data: any) => {
-      this.allSelectedTodoComments = data.reverse()
+    .subscribe((res: any) => {
+      this.allSelectedTodoComments = res.data.$values.reverse()
       this.isTodoCommentLoading = false 
     }, err => {
         this.store.setErrMsg(err.error.error)
@@ -156,10 +154,10 @@ if(this.selectedTask.status === "TODO") {
   handleOnClickSendComment() {
     if(this.commentMsg) {
       this.projectPageService.handleOnPostComment(this.selectedTask.id, this.commentMsg, JSON.parse(localStorage.getItem("user")+""))
-      .subscribe((data: any) => {
-        this.allSelectedTodoComments.unshift(data)
+      .subscribe((res: any) => {
+        this.allSelectedTodoComments.unshift(res.data)
         this.commentMsg = ""
-        console.log(data)
+        //console.log(data)
       }, err => {
         this.store.setErrMsg(err.error.error)
       })
@@ -205,10 +203,10 @@ if(this.selectedTask.status === "TODO") {
         newIndex = todoArr[event.currentIndex - 1].index + 0.01 
       }
       todoArr[event.currentIndex].index = newIndex
-      // console.log(newIndex)
-      // console.log(todoArr)
+      // //console.log(newIndex)
+      // //console.log(todoArr)
       // this.projectPageService.handleOnUpdateTodo(todo.id, todo.title,todo.projectId,todo.context,todoStatus, todo.username, newIndex, todo.priority, todo.assignTo).subscribe()
-      console.log(todoStatus)
+      //console.log(todoStatus)
       this.handleOnUpdateTodo(todo.id, todo.title,todo.context,todoStatus, todo.username, newIndex, todo.priority, todo.assignTo)
       //  handleOnUpdateTodo(todoId, title,context, status, username, index, priority, assignTo) {
   }
@@ -223,16 +221,16 @@ if(this.selectedTask.status === "TODO") {
       }
     }
 
-    console.log(res)
+    //console.log(res)
     return res
   }
 
   handleOnClickAddEmail() {
     if(this.newShareProjectEmail) {
-      console.log(123 )
+      //console.log(123 )
       this.projectPageService.handleOnShareProject(this.projectData.id, this.newShareProjectEmail)
       .subscribe(data => {
-        console.log(data)
+        //console.log(data)
       }, err => {
         this.store.setErrMsg(err.error.error)
       })
@@ -245,7 +243,7 @@ if(this.selectedTask.status === "TODO") {
 
  handleOnReturnUsername(todo: any) {
   const t = this.projectData.shareUsersId.$values.findIndex((j: any) => j === +todo.assignTo)
-  // console.log(t, todo.assignTo)
+  // //console.log(t, todo.assignTo)
   return this.projectData.shareUsersUsername.$values[t]
  }
 }

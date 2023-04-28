@@ -1,5 +1,5 @@
 function inputValidate(data: any,target: string, type: string) {
-    console.log(isValidInputs)
+    //console.log(isValidInputs)
     if (type === "normal") {
       if (!data[target].value) data[target].errMsg = `${target} is empty` 
       else if (data[target].value.length < 3) data[target].errMsg = `${target} is less than 3 chars`

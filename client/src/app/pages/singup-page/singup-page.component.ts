@@ -39,7 +39,7 @@ this.store.getErrMsg().subscribe((value) => {
     }
   }
   inputValidate(target: string, type: string) {
-    console.log(this.isValidInputs)
+    //console.log(this.isValidInputs)
     if (type === "normal") {
       if (!this.data[target].value) this.data[target].errMsg = `${target} is empty` 
       else if (this.data[target].value.length < 3) this.data[target].errMsg = `${target} is less than 3 chars`

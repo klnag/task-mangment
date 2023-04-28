@@ -23,16 +23,19 @@ this.store.getErrMsg().subscribe((value) => {
   }
 
   ngOnInit() {
-    console.log(111)
+    //console.log(111)
     this.handleOnGetAllUserProjects()
   }
 
   handleOnGetAllUserProjects(){
 this.isLoading = true
-    this.projectsPageService.handleOnGetAllProjects(this.userData.id).subscribe((data: any) => {
-      console.log(data)
-      this.projects = data
+    this.projectsPageService.handleOnGetAllProjects(this.userData.id)
+    .subscribe((res: any) => {
+      // //console.log(data)
+      this.projects = res.data.$values 
       this.isLoading = false 
+    },err => {
+      this.store.setErrMsg(err.error.error)
     })
   }
 
@@ -41,7 +44,7 @@ this.isLoading = true
       this.isAddNewProjectLoading = true
       this.projectsPageService.handleOnAddNewProject(this.newProjectName).subscribe((data: any) => {
         this.projects.push(data.data)
-      console.log(data.data)
+      //console.log(data.data)
         this.newProjectName = ""
         this.isAddNewProjectLoading = false 
       }, err => {

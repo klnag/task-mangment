@@ -23,7 +23,7 @@ export const AuthNotGuard: CanActivateFn = (
   const router = inject(Router);
 
   if(authService.isLoggedIn()) {
-    console.log(route.url )
+    //console.log(route.url )
     // if(route.url === "/login")
     router.navigate(['projects'])
     return false

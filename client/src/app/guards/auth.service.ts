@@ -19,19 +19,19 @@ export class AuthService {
 
   getUserInfo() {
     // if (!localStorage.getItem("user")) {
-    console.log(this.cookieService.get("token"))
+    //console.log(this.cookieService.get("token"))
       this.http.get('http://localhost:5242/api/User', {
         headers: { "Authorization": "Bearer " + this.cookieService.get("token") }, responseType: "json"
       }
-      ).subscribe(data => {
-        localStorage.setItem("user", JSON.stringify({ user: data }))
+      ).subscribe((res: any) => {
+        localStorage.setItem("user", JSON.stringify({ user: res.data }))
         this.loggedIn = true;
         this.isLoggedin.next(true)
         // this.location.go('/projects')
         // window.location.reload()
-        this.router.navigate(['projects'])
+        // this.router.navigate(['projects'])
       }, err => {
-          console.log(err)
+          //console.log(err)
         this.cookieService.delete("token")
         localStorage.removeItem("user")
         localStorage.removeItem("project")
@@ -47,9 +47,9 @@ export class AuthService {
       "username": username,
       "email": email,
       "password": password 
-    }).subscribe((data: any) => {
-      console.log(data)
-      this.cookieService.set("token", data.data)
+    }).subscribe((res: any) => {
+      // //console.log(data)
+      this.cookieService.set("token", res.data)
       this.getUserInfo()
     }, err => {
       // this.store.errMsg =err.error.error 
@@ -58,14 +58,14 @@ export class AuthService {
   }
   
   login(email: string, password: string) {
-    console.log(email)
+    //console.log(email)
     this.http.post("http://localhost:5242/api/User/login", {
       "username": "string",
       "email": email,
       "password": password 
-    }).subscribe((data: any) => {
-      console.log(data)
-      this.cookieService.set("token", data.data)
+    }).subscribe((res: any) => {
+      // //console.log(data)
+      this.cookieService.set("token", res.data)
       this.getUserInfo()
     }, err => {
       // this.store.errMsg =err.error.error 

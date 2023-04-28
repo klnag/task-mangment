@@ -1,0 +1,19 @@
+<header class="flex bg-[#0747A6] text-white text-xl h-[5vh]">
+    <h1 class="w-1/2 text-center my-auto">
+        <a routerLink="">Tasky</a>
+    </h1>
+    <ul class="flex justify-around  my-auto w-1/2">
+        <li *ngIf="!isLoggedIn">
+            <a routerLink="login">Login</a>
+        </li>
+        <li *ngIf="!isLoggedIn">
+            <a routerLink="singup">Sing up</a>
+        </li>
+        <li *ngIf="isLoggedIn">
+            <a routerLink="projects">Projects</a>
+        </li>
+    </ul>
+    <button class="mr-8" *ngIf="isLoggedIn"(click)="handleOnLogout()">Logout</button>
+
+
+</header>

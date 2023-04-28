@@ -65,7 +65,7 @@ public class UserController : ControllerBase {
             return response;
         }
         response.Error = "Email already exist.";
-        return BadRequest(response);
+        return response;
     }
 
     [HttpPost("login")]
@@ -98,15 +98,15 @@ public class UserController : ControllerBase {
     // }
 
 
-    // [HttpDelete(), Authorize]
-    // public string Delete() {
-    //     string id = User.Identity.Name;
-    //     User? user = context.Users?.Find(int.Parse(id));
-    //     if(user == null){
-    //         return "user does not exisit";
-    //     }
-    //     context.Users?.Remove(user);
-    //     context.SaveChanges();
-    //     return "user deleted";
-    // }
+    [HttpDelete(), Authorize]
+    public string Delete() {
+        string id = User.Identity.Name;
+        User? user = context.Users?.Find(int.Parse(id));
+        if(user == null){
+            return "user does not exisit";
+        }
+        context.Users?.Remove(user);
+        context.SaveChanges();
+        return "user deleted";
+    }
 }

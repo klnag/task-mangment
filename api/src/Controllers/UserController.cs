@@ -99,14 +99,17 @@ public class UserController : ControllerBase {
 
 
     [HttpDelete(), Authorize]
-    public string Delete() {
-        string id = User.Identity.Name;
-        User? user = context.Users?.Find(int.Parse(id));
+    public ApiResponse<string> Delete() {
+        ApiResponse<string> response = new ApiResponse<string>();
+        int id = int.Parse(User.Identity.Name);
+        User? user = context.Users.Find(id);
         if(user == null){
-            return "user does not exisit";
+            response.Error = "user does not exisit"; 
+            return response;
         }
         context.Users?.Remove(user);
         context.SaveChanges();
-        return "user deleted";
+        response.Data = "user deleted";
+        return response;
     }
 }

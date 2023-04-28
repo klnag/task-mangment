@@ -29,7 +29,10 @@ export class AuthService {
         this.isLoggedin.next(true)
         // this.location.go('/projects')
         // window.location.reload()
-        // this.router.navigate(['projects'])
+        if(this.router.url === "/login" || this.router.url === "/singup") {
+
+        this.router.navigate(['projects'])
+        }
       }, err => {
           //console.log(err)
         this.cookieService.delete("token")

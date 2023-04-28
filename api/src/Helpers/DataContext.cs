@@ -8,20 +8,28 @@ using src.Models.CommentModel;
 
 public class DataContext : DbContext
 {
-    protected readonly IConfiguration Configuration;
+    // protected readonly DbContextOptions<DataContext> Configuration;
 
-    public DataContext(IConfiguration configuration)
+    public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
-        Configuration = configuration;
+        // Configuration = options;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        // connect to postgres with connection string from app settings
-        options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING"));
+    //     // connect to postgres with connection string from app settings
+        // options.UseNpgsql(Environment.GetEnvironmentVariable("CONNECTION_STRING"));
+        // options.UseInMemoryDatabase("MyDb");
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        options.UseNpgsql(configuration.GetConnectionString("TestConnection"));
+
     }
 
-    public DbSet<User>? Users { get; set; }
+    public DbSet<User> Users { get; set; }
     public DbSet<Project>? Projects { get; set; }
     public DbSet<Todo>? Todos { get; set; }
     public DbSet<Comment>? Comments { get; set; }

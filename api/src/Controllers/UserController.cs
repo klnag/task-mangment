@@ -64,6 +64,7 @@ public class UserController : ControllerBase {
             response.Data = userCreateJwt(newUser.Id+"");
             return response;
         }
+
         response.Error = "Email already exist.";
         return response;
     }
@@ -98,11 +99,13 @@ public class UserController : ControllerBase {
     // }
 
 
-    [HttpDelete(), Authorize]
+    [HttpDelete() ,Authorize()]
     public ApiResponse<string> Delete() {
+
         ApiResponse<string> response = new ApiResponse<string>();
-        int id = int.Parse(User.Identity.Name);
+        int id = int.Parse(User.Identity.Name) ;
         User? user = context.Users.Find(id);
+        Console.WriteLine(user.ToString());
         if(user == null){
             response.Error = "user does not exisit"; 
             return response;

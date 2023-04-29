@@ -14,7 +14,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
 using Newtonsoft.Json;
-
+using DotNetEnv;
 public class ApiResponse<T>
 {
     public T? Data { get; set; }
@@ -26,8 +26,6 @@ namespace tests.UserControllerTests{
 
 public class UserControllerTest 
 {
-    private readonly DataContext _context;
-    private readonly UserController userController;
     private readonly HttpClient _client;
     private static string token = "";
 
@@ -35,24 +33,15 @@ public class UserControllerTest
         {
             _client = new HttpClient();
             _client.BaseAddress = new Uri("http://localhost:5242"); // replace with your API's base URL
-        
-            var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
-            optionsBuilder.UseNpgsql(configuration.GetConnectionString("TestConnection"));
-
-            _context = new DataContext(optionsBuilder.Options);
-
-            userController = new UserController(configuration, _context);
-
         }
 
         [Fact(DisplayName = "Create new user")]
         public async void CreateNewUser()
         {
-            UserDto user = new UserDto { Username = "111", Email = "qqsqssqq", Password = "pass1" };
+
+            Env.Load();
+            Console.WriteLine(Environment.GetEnvironmentVariable("TESTCODE"));
+            UserDto user = new UserDto { Username = "111", Email = "qqssqssqq", Password = "pass1" };
             var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
             // var token = "my-auth-token";
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

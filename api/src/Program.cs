@@ -9,7 +9,7 @@ using DotNetEnv;
 
 DotNetEnv.Env.Load();
 var builder = WebApplication.CreateBuilder(args);
-string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")!;
 // Console.WriteLine(connectionString);
 // Add services to the container.
 

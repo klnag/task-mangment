@@ -37,15 +37,15 @@ public class UserController : ControllerBase {
     // }
     public class ApiResponse<T>
     {
-        public T Data { get; set; }
+        public T? Data { get; set; }
         public string Error { get; set; } = "";
     }
 
     [HttpGet(), Authorize()]
     public ActionResult<ApiResponse<User>> GetInfo() {
         ApiResponse<User> response = new ();
-        string id = User.Identity.Name;
-        User? user = context.Users?.Find(int.Parse(id));
+        int userId = int.Parse(User.Identity?.Name!);
+        User? user = context.Users?.Find(userId);
         if(user == null) {
             response.Error = "user does not exsist";
             return BadRequest(response);
@@ -72,7 +72,7 @@ public class UserController : ControllerBase {
     [HttpPost("login")]
     public ActionResult<ApiResponse<string>> post(UserDto userFormBody) {
         ApiResponse<string> response = new ApiResponse<string>();
-        User user = context.Users?.FirstOrDefault(user => user.Email == userFormBody.Email);
+        User user = context.Users?.FirstOrDefault(user => user.Email == userFormBody.Email)!;
         if(user == null) {
             response.Error = "The username and/or password you specified are not correct.";
             return BadRequest(response);
@@ -103,9 +103,9 @@ public class UserController : ControllerBase {
     public ApiResponse<string> Delete() {
 
         ApiResponse<string> response = new ApiResponse<string>();
-        int id = int.Parse(User.Identity.Name) ;
-        User? user = context.Users.Find(id);
-        Console.WriteLine(user.ToString());
+        int id = int.Parse(User.Identity?.Name!) ;
+        User user = context.Users?.Find(id)!;
+        // Console.WriteLine(user.ToString());
         if(user == null){
             response.Error = "user does not exisit"; 
             return response;

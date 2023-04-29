@@ -49,7 +49,7 @@ public class UserControllerTest
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
             var  responseContentJson = JsonConvert.DeserializeObject<ApiResponse<string>>(responseContent) ;
-            token = responseContentJson.Data ;
+            token = responseContentJson.Data! ;
             Console.WriteLine(responseContentJson.Data);
             Console.WriteLine(responseContentJson.Error);
         }

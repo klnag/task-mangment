@@ -35,13 +35,14 @@ public class ProjectController : ControllerBase
     public ActionResult<ApiResponse<Project>> Post([FromBody] ProjectDto projectName)
     {
         ApiResponse<Project> response = new ApiResponse<Project>();
-        User user = context.Users.FirstOrDefault(u => u.Id == int.Parse(User.Identity.Name));
+        int userId = int.Parse(User.Identity?.Name!);
+        User user = context.Users?.FirstOrDefault(u => u.Id == userId)!;
         if (user != null)
         {
-            if (context.Projects.FirstOrDefault(proj => proj.Name == projectName.Name) == null)
+            if (context.Projects?.FirstOrDefault(proj => proj.Name == projectName.Name) == null)
             {
-                Project newProject = new Project { Name = projectName.Name, User = user, ShareUsersId = { user.Id }, ShareUsersUsername = { user.Username } };
-                context.Projects.Add(newProject);
+                Project newProject = new Project { Name = projectName.Name, User = user, ShareUsersId = { user.Id }, ShareUsersUsername = { user.Username! } };
+                context.Projects?.Add(newProject);
                 context.SaveChanges();
                 response.Data = newProject;
                 return response;
@@ -85,13 +86,13 @@ public class ProjectController : ControllerBase
     public ActionResult<ApiResponse<IQueryable<Project>>> getAllUserProjects(int userId)
     {
         ApiResponse<IQueryable<Project>> response = new();
-        if (context.Users.Find(userId) == null)
+        if (context.Users?.Find(userId) == null)
         {
             response.Error = "User does not exist";
             return BadRequest(response);
         }
-        User user = context.Users.Find(userId);
-        IQueryable<Project> allUserProjects = context.Projects.Where(p => p.ShareUsersId.Contains(user.Id));
+        User? user = context.Users.Find(userId);
+        IQueryable<Project> allUserProjects = context.Projects!.Where(p => p.ShareUsersId.Contains(userId));
         response.Data = allUserProjects;
         return response;
     }
@@ -100,14 +101,14 @@ public class ProjectController : ControllerBase
     public ActionResult<ApiResponse<IQueryable<Todo>>> getAllProjecTodo(int projectId)
     {
         ApiResponse<IQueryable<Todo>> response = new();
-        int userId = int.Parse(User.Identity.Name);
-        if (context.Users.Find(userId) == null)
+        int userId = int.Parse(User.Identity?.Name!);
+        if (context.Users?.Find(userId) == null)
         {
             response.Error = "User does not exist";
             return response;
         }
 
-        IQueryable<Todo> allProjectTodos = context.Todos.Where(todo => todo.ProjectId == projectId);
+        IQueryable<Todo> allProjectTodos = context.Todos!.Where(todo => todo.ProjectId == projectId);
         response.Data = allProjectTodos.OrderBy(t => t.index);
         return response;
     }
@@ -116,9 +117,9 @@ public class ProjectController : ControllerBase
     public ActionResult<ApiResponse<string>> addUserToProject(int projectId, string sharedUserEmail)
     {
         ApiResponse<string> response = new();
-        int userId = int.Parse(User.Identity.Name);
-        User user = context.Users.Find(userId);
-        User sharedUser = context.Users.FirstOrDefault(u => u.Email == sharedUserEmail);
+        int userId = int.Parse(User.Identity?.Name!);
+        User user = context.Users?.Find(userId)!;
+        User sharedUser = context.Users?.FirstOrDefault(u => u.Email == sharedUserEmail)!;
         if (sharedUser == null)
         {
             response.Error = "couldt find email";
@@ -126,7 +127,7 @@ public class ProjectController : ControllerBase
         }
         if (user != null)
         {
-            Project project = context.Projects.Find(projectId);
+            Project project = context.Projects?.Find(projectId)!;
             if (project != null)
             {
                 if (project.UserId == user.Id)
@@ -137,8 +138,8 @@ public class ProjectController : ControllerBase
                         if (!project.ShareUsersId.Any(p => p == sharedUser.Id))
                         {
                             project.ShareUsersId.Add(sharedUser.Id);
-                            project.ShareUsersUsername.Add(sharedUser.Username);
-                            context.Projects.Update(project);
+                            project.ShareUsersUsername.Add(sharedUser.Username!);
+                            context.Projects?.Update(project);
                             context.SaveChanges();
                             response.Data = "Done";
                             return response;

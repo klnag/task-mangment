@@ -18,7 +18,7 @@ public class TodoController : ControllerBase {
     }
     public class ApiResponse<T>
     {
-        public T Data { get; set; }
+        public T? Data { get; set; }
         public string Error { get; set; } = "";
     }
     // [HttpGet()]
@@ -30,14 +30,14 @@ public class TodoController : ControllerBase {
     public ActionResult<ApiResponse<Todo>> Post([FromBody] TodoDto todoFormBody)
     {
         ApiResponse<Todo> response = new();
-        Project project = context.Projects.FirstOrDefault(u => u.Id == todoFormBody.ProjectId);
+        Project project = context.Projects?.FirstOrDefault(u => u.Id == todoFormBody.ProjectId)!;
         if (project == null)
         {
             response.Error = "project not found";
             return BadRequest(response);
         }
         Todo newTodo = new Todo { Title = todoFormBody.Title, Project = project, username = todoFormBody.username, index = todoFormBody.index, Priority = todoFormBody.Priority, AssignTo = todoFormBody.AssignTo };
-        context.Todos.Add(newTodo);
+        context.Todos?.Add(newTodo);
         context.SaveChanges();
         response.Data = newTodo;
         return response;
@@ -47,7 +47,7 @@ public class TodoController : ControllerBase {
     public  ActionResult<ApiResponse<Todo>> UpdateTaskPosition(int id, [FromBody] TodoDto request)
     {
         ApiResponse<Todo> response = new();
-        Todo taskItem =  context.Todos.Find(id);
+        Todo taskItem =  context.Todos?.Find(id)!;
         if (taskItem == null)
         {
             response.Error = "Todo does not exist";
@@ -55,12 +55,12 @@ public class TodoController : ControllerBase {
         }
 
         taskItem.Title = request.Title;
-        taskItem.Context = request.Context;
+        taskItem.Context = request.Context!;
         taskItem.index = request.index;
         taskItem.Status = request.Status;
         taskItem.Priority = request.Priority;
         taskItem.AssignTo = request.AssignTo;
-        context.Todos.Update(taskItem);
+        context.Todos?.Update(taskItem);
         context.SaveChanges();
 
         response.Data = taskItem;

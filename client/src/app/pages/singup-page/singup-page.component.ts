@@ -22,7 +22,7 @@ export class SingupPageComponent {
     password: { value: "", errMsg: "init"},
   }
 
-  constructor(private http: HttpClient, private cookiesSerivce: CookieService, private router: Router, private authService: AuthService, private store: GlobalVariblesService) {
+  constructor(private http: HttpClient, private cookiesSerivce: CookieService, private router: Router, private authService: AuthService, private store: GlobalVariblesService, private cookieService:CookieService) {
 this.store.getErrMsg().subscribe((value) => {
       this.errMsg = value
     })
@@ -35,7 +35,23 @@ this.store.getErrMsg().subscribe((value) => {
     if(!this.data["username"].errMsg && !this.data["email"].errMsg && !this.data["password"].errMsg) {
       this.isValidInputs = false
       this.isLoading = true
-      this.authService.singup(this.data["username"].value, this.data["email"].value,this.data["password"].value)
+      this.authService.singup(this.data["username"].value, this.data["email"].value, this.data["password"].value)
+        .subscribe((res: any) => {
+          // //console.log(data)
+          this.cookieService.set("token", res.data)
+
+      this.isLoading =false
+
+      // this.router.navigate(['/'])
+
+      this.authService.getUserInfo()
+          // this.getUserInfo()
+        }, err => {
+          // this.store.errMsg =err.error.error 
+          this.store.setErrMsg(err.error.error)
+
+      this.isLoading =false
+        })
     }
   }
   inputValidate(target: string, type: string) {

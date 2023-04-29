@@ -1,6 +1,8 @@
+import { CookieService } from 'ngx-cookie-service';
 import { Component } from '@angular/core';
 import { AuthService } from 'src/app/guards/auth.service';
 import { GlobalVariblesService } from 'src/app/store/global-varibles.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-page',
@@ -18,7 +20,7 @@ export class LoginPageComponent {
     password: { value: "", errMsg: "init"},
   }
 
-  constructor(private authService: AuthService, private store: GlobalVariblesService) {
+  constructor(private authService: AuthService, private store: GlobalVariblesService, private cookieService:CookieService, private router: Router) {
 
     this.store.getErrMsg().subscribe((value) => {
       this.errMsg = value
@@ -32,6 +34,23 @@ export class LoginPageComponent {
       this.isValidInputs = false
       this.isLoading = true
       this.authService.login(this.data["email"].value, this.data["password"].value)
+      .subscribe((res: any) => {
+      // //console.log(data)
+      this.cookieService.set("token", res.data)
+
+      this.isLoading =false 
+
+      // this.router.navigate(['/'])
+      // location.reload()
+      this.authService.getUserInfo()
+
+      // this.getUserInfo()
+    }, err => {
+      // this.store.errMsg =err.error.error 
+      this.store.setErrMsg(err.error.error)
+
+      this.isLoading =false 
+    })
     }
   }
   inputValidate(target: string, type: string) {

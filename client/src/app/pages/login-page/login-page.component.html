@@ -48,4 +48,6 @@
     </div>
   </div>
 </div>
+
+<app-loading *ngIf="isLoading"></app-loading>
 <app-alert-box *ngIf="errMsg" [err]="errMsg"></app-alert-box>

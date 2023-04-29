@@ -66,7 +66,7 @@ public class UserController : ControllerBase {
         }
 
         response.Error = "Email already exist.";
-        return response;
+        return BadRequest(response);
     }
 
     [HttpPost("login")]

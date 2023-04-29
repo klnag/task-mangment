@@ -80,7 +80,7 @@
         </div>
     </div>
 </div>
-<div *ngIf="isUpdatingTask" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50  overflow-auto">
+<!-- <div *ngIf="isUpdatingTask" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50  overflow-auto">
     <div class="w-3/4 sm:w-5/6 lg:w-3/4 xl:w-1/2 2xl:w-2/3 h-max bg-white text-black overflow-auto rounded-2xl max-h-[85%] ">
         <div class="m-8 flex-1">
             <div class="flex flex-col sm:flex-row h-1/4">
@@ -185,6 +185,110 @@
             </div>
         </div>
     </div>
+</div> -->
+
+
+<div *ngIf="isUpdatingTask" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50  overflow-auto">
+    <div class="w-2/5 max-h-[98%] overflow-auto bg-white rounded-xl flex flex-col p-4">
+        <div class="">
+            <button class="float-right" (click)="handleOnClickCloseTodo()">X</button>
+            <button class="float-right mr-8 bg-red-400 text-white rounded-xl px-2" (click)="handleOnClickDelete()">Delete</button>
+        </div>
+        <div>
+            <h1 *ngIf="!isUpdateingTodoTitle"
+                (click)="isUpdateingTodoTitle = true; selectedTodoTitleUpdate = selectedTask.title" class="text-3xl">
+                {{selectedTask.title}}</h1>
+            <div *ngIf="isUpdateingTodoTitle" class="w-full">
+                <textarea class="w-full text-2xl p-2 border mb-2" rows="2" [(ngModel)]="selectedTodoTitleUpdate"></textarea>
+                <div class="flex justify-end">
+                    <button class="mr-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+                        (click)="handleOnUpdateTodo(selectedTask.id, selectedTodoTitleUpdate, selectedTask.context, selectedTask.status, selectedTask.username, selectedTask.index, selectedTask.priority, selectedTask.assignTo)">Update</button>
+                    <button class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg"
+                        (click)="isUpdateingTodoTitle = false">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 text-sm text-gray-400">
+            <ul class="w-1/2">
+                <li class="flex justify-between my-1">Status <strong class="text-black  font-normal">{{selectedTask.status}}</strong></li>
+                <li class="flex justify-between my-1">Asignee 
+                    <select class="text-black max-w-30" (change)="handleOnChangeTodoUserAssign($event)">
+                        <option value="">Unassigned</option>
+                        <ng-container *ngFor="let t of projectData.shareUsersUsername.$values ; let i = index">
+                            <option [value]="projectData.shareUsersId.$values[i]"
+                                [selected]="selectedTask.assignTo == projectData.shareUsersId.$values[i]">{{t}}
+                            </option>
+                        </ng-container>
+                    </select>
+                </li>
+                <li class="flex justify-between my-1">Created At <strong class="text-black  font-normal">{{ selectedTaskCreatedAt }}</strong></li>
+                <li class="flex justify-between my-1">Priority
+                    <select class="text-black max-w-30"
+                        (change)="handleOnUpdateTodo(selectedTask.id, selectedTask.title, selectedTask.context, selectedTask.status, selectedTask.username, selectedTask.index, $event.target , selectedTask.assignTo)">
+                        <option [value]="selectedTask.priority" hidden>{{selectedTask.priority}}</option>
+                        <option value="low">low</option>
+                        <option value="mid">mid</option>
+                        <option value="high">high</option>
+                    </select>
+                </li>
+            </ul>
+        </div>
+        <div class="mt-4">
+            <h1>Description</h1>
+            <div *ngIf="selectedTask.context">
+                <p (click)="isUpdateTodoContext = true" *ngIf="!isUpdateTodoContext" class="ml-6 mt-3 text-sm text-gray-500 ">
+                    {{selectedTask.context}}</p>
+                <div *ngIf="isUpdateTodoContext">
+                    <textarea [(ngModel)]="selectedTodoContext" class="p-4 border   rounded-lg w-full"
+                        rows="3"></textarea>
+                    <button class="bg-blue-300 mr-4 text-white py-2 px-4 rounded-md"
+                        (click)="handleOnUpdateTodo(selectedTask.id,selectedTask.title, selectedTodoContext,selectedTask.status, selectedTask.username, selectedTask.index, selectedTask.priority, selectedTask.assignTo )">Update</button>
+                    <button class="bg-gray-100  py-2 px-4 rounded-md"
+                        (click)="isUpdateTodoContext = false ; selectedTodoContext = selectedTask.context">Cancel</button>
+                </div>
+            </div>
+            <div *ngIf="!selectedTask.context" class="text-sm text-gray-500 mt-2">
+                <textarea placeholder="You don't have a context, add one" [(ngModel)]="selectedTodoContext" rows="4"
+                    class="w-full p-2 border "></textarea>
+                <button class=" bg-blue-500 text-white py-1 px-2 rounded-xl"
+                    (click)="handleOnUpdateTodo(selectedTask.id,selectedTask.title, selectedTodoContext, selectedTask.status, selectedTask.username, selectedTask.index, selectedTask.priority, selectedTask.assignTo)">Add</button>
+            </div>
+        </div>
+        <div class="mt-4">
+
+            <h1>Comments</h1>
+            <div class=" flex ">
+                <span class="w-8 h-8 bg-blue-400 rounded-full flex justify-center items-center text-white">{{userData.user.username[0]}}</span>
+                <input type="text" class="bg-gray-200 ml-2 rounded-2xl flex-1 pl-4" [(ngModel)]="commentMsg">
+                <button (click)="handleOnClickSendComment()" class="bg-blue-500 rounded-xl px-2 ml-1 text-sm text-white">Send</button>
+            </div>
+
+            <div class="mt-4" *ngIf="isTodoCommentLoading">Loading...</div>
+            <div *ngIf="!isTodoCommentLoading" class="mt-8">
+                <div *ngFor="let comment of allSelectedTodoComments">
+                    <div class="flex items-center">
+                        <span class="w-8 h-8 bg-blue-400 rounded-full flex justify-center items-center text-white">{{comment["userName"][0]}}</span>
+                        <p class="ml-4">{{comment["userName"]}}</p>
+                    </div>
+                    <p class="mt-2 ml-8">{{comment["context"]}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <app-alert-box *ngIf="errMsg" [err]="errMsg"></app-alert-box>

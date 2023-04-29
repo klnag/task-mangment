@@ -140,7 +140,7 @@ if(this.selectedTask.status === "TODO") {
     this.selectedTask = todo
       this.selectedTodoContext = todo.context
     //console.log(todo, new Date(todo.createdAt).toLocaleString())
-    this.selectedTaskCreatedAt = new Date(todo.createdAt).toLocaleString()
+    this.selectedTaskCreatedAt = new Date(todo.createdAt).toLocaleDateString()
     this.selectedTaskUpdateAt = new Date(todo.updateddAt).toLocaleString()
     this.projectPageService.handleOnGetAllTaskComments(todo.id)
     .subscribe((res: any) => {
@@ -246,4 +246,10 @@ if(this.selectedTask.status === "TODO") {
   // //console.log(t, todo.assignTo)
   return this.projectData.shareUsersUsername.$values[t]
  }
+  handleOnClickCloseTodo() {
+    this.isUpdatingTask = false;
+    this.isUpdateTodoContext = false;
+    this.isUpdateTodoContext = false;
+    this.isUpdateingTodoTitle = false
+  }
 }

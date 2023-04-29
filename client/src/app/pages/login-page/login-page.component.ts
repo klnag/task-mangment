@@ -26,7 +26,13 @@ export class LoginPageComponent {
   }
 
   handleOnLogin() {
-    this.authService.login(this.data["email"].value,this.data["password"].value)
+    this.inputValidate("email", "email")
+    this.inputValidate("password", "password")
+    if (!this.data["email"].errMsg && !this.data["password"].errMsg) {
+      this.isValidInputs = false
+      this.isLoading = true
+      this.authService.login(this.data["email"].value, this.data["password"].value)
+    }
   }
   inputValidate(target: string, type: string) {
     if (type === "normal") {

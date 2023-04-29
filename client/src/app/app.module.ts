@@ -15,6 +15,7 @@ import { ProjectPageComponent } from './pages/project-page/project-page.componen
 import { ProjectsPageComponent } from './pages/projects-page/projects-page.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { AlertBoxComponent } from './components/alert-box/alert-box.component';
+import { LoadingComponent } from './components/loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { AlertBoxComponent } from './components/alert-box/alert-box.component';
     FooterComponent,
     ProjectsPageComponent,
     ProjectPageComponent,
-    AlertBoxComponent
+    AlertBoxComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,

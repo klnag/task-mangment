@@ -20,7 +20,7 @@ interface Status {
 export class ProjectPageComponent {
   projectData = JSON.parse(localStorage.getItem("project")+"")
   userData = JSON.parse(localStorage.getItem("user")+"")
-  isLoadding = false
+  isLoading = false
   newTodo = ""
   selectedTask: any = {}
   isUpdatingTask = false
@@ -49,7 +49,7 @@ this.store.getErrMsg().subscribe((value) => {
   }
   ngOnInit() {
     this.stringTOHtml("Hi\n there\n")
-    this.isLoadding = true
+    this.isLoading = true
     this.projectPageService.handleOnGetAllTodos(this.projectData.id).subscribe((res: any) => {
       const data = res.data.$values
       data.map((todo: any) => {
@@ -64,7 +64,7 @@ this.store.getErrMsg().subscribe((value) => {
       //console.log(this.allTodoColTodos)
       //console.log(this.allInPrograceColTodos)
       //console.log(this.allDoneColTodos)
-      this.isLoadding = false 
+      this.isLoading = false 
     }, err => {
         this.store.setErrMsg(err.error.error)
       })

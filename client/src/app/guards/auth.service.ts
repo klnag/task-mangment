@@ -32,6 +32,7 @@ export class AuthService {
         if(this.router.url === "/login" || this.router.url === "/singup") {
 
         this.router.navigate(['projects'])
+        location.reload
         }
       }, err => {
           //console.log(err)

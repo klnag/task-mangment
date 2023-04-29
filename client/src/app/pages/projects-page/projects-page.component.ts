@@ -42,7 +42,7 @@ this.isLoading = true
   handleOnAddProject() {
     if(this.newProjectName) {
       this.isAddNewProjectLoading = true
-      this.projectsPageService.handleOnAddNewProject(this.newProjectName).subscribe((data: any) => {
+      this.projectsPageService.handleOnAddNewProject(this.userData.id,this.newProjectName).subscribe((data: any) => {
         this.projects.push(data.data)
       //console.log(data.data)
         this.newProjectName = ""

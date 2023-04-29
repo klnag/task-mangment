@@ -31,12 +31,12 @@ public class ProjectController : ControllerBase
     //     return context.Projects;
     // }
 
-    [HttpPost]
-    public ActionResult<ApiResponse<Project>> Post([FromBody] ProjectDto projectName)
+    [HttpPost("{userId}")]
+    public ActionResult<ApiResponse<Project>> Post(int userId,[FromBody] ProjectDto projectName)
     {
         ApiResponse<Project> response = new ApiResponse<Project>();
-        int userId = int.Parse(User.Identity?.Name!);
-        User user = context.Users?.FirstOrDefault(u => u.Id == userId)!;
+        // int userId = int.Parse(User.Identity?.Name!);
+        User user = context.Users?.Find(userId)!;
         if (user != null)
         {
             if (context.Projects?.FirstOrDefault(proj => proj.Name == projectName.Name) == null)
